@@ -8,6 +8,11 @@ Seminal paper on how Age of Empires II dealt with the networking problem by
 implementing client lockstep simulations. Lockstep implementation here requires
 N<sup>2</sup> stable (but slow) connections.
 
+* [The effect of latency on user performance in Real-Time Strategy games](http://web.cs.wpi.edu/~claypool/papers/rts/paper.pdf) 2005
+
+Important finding that overall network latency didn't actually impact the
+outcome of RTS games much.
+
 * [Rokkatan: scaling an RTS game design to the massively multiplayer realm](https://dl.acm.org/doi/abs/10.1145/1146816.1146833) 2006
 
 Scales up clients connecting to a game by implementing multiple proxy servers.
@@ -62,15 +67,15 @@ trajectories (instead of frame-by-frame updates) to save on bandwidth.
 Convenient back of the envelope bandwith calculations for RTS games.
 
 * [Don’t use Lockstep in RTS games](https://medium.com/@treeform/dont-use-lockstep-in-rts-games-b40f3dd6fddb) 2016
-* [Friday Facts #76 - MP inside out](https://www.factorio.com/blog/post/fff-76)
+* [Friday Facts #76 - MP inside out](https://www.factorio.com/blog/post/fff-76) 2015
 
-Factorio originally used lockstep to deal with broadcasting game state. This
+_Factorio_ originally used lockstep to deal with broadcasting game state. This
 is an interesting case as it similarly has to deal with large maps and changing
 terrain with large amounts of data being transferred across multiple clients.
 
 * [Friday Facts #147 - Multiplayer rewrite](https://www.factorio.com/blog/post/fff-147) 2016
 
-Describes in detail the networking model migration for Factorio from lockstep
+Describes in detail the networking model migration for _Factorio_ from lockstep
 to server-elect model.
 
 * [Building a Multiplayer RTS in Unreal Engine](https://www.gamasutra.com/blogs/DruErridge/20181004/327885/Building_a_Multiplayer_RTS_in_Unreal_Engine.php) 2018
