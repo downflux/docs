@@ -205,9 +205,9 @@ the map terrain and mutating the curves. This is a heavy subroutine.
 
 ##### Delete Entities
 
-For the current server tick, we check the `TRIGGER_QUEUE` for any curves that
-have significant effects, e.g. setting health to 0. For these curves, we need
-to
+For the current server tick, we check the `TRIGGER_QUEUE`<sup>7</sup> for any
+curves that have significant effects, e.g. setting health to 0. For these
+curves, we need to
 
 1. delete the parent entity (e.g. structure or unit)
 1. delete the row from the queue
@@ -354,3 +354,8 @@ this design document.
 [The Tech of Planetary Annihilation: ChronoCam](https://www.forrestthewoods.com/blog/tech_of_planetary_annihilation_chrono_cam/).
 Curves are linear transformations of a variable trajectory. This transformation
 saves on data being sent to the client.
+
+<sup>7</sup>We need to decide if we want a generic trigger queue, or a queue
+broken down by category, with the `CurveID` still mapping back to a global
+lookup map.
+
