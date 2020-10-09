@@ -327,8 +327,15 @@ replay purposes.
 
 ## Work Estimates
 
-| Work Item | Time Estimate | Status | Artifact |
-| --------- | ------------- | ------ | -------- |
+| Work Item                   | Time Estimate            | Status      |
+| --------------------------- | ------------------------ | ----------- |
+| barebones client and server | 1 week                   | NOT STARTED |
+| implement tick phase        | 1 day                    | NOT STARTED |
+| implement input queue       | 1 week                   | NOT STARTED |
+| implement output queue      | 1 week                   | NOT STARTED |
+| implement create entities   | 1 week                   | NOT STARTED |
+| implement pathfind          | 1 week                   | NOT STARTED |
+| ...                         | lifetime of the universe | NOT STARTED |
 
 ## Footnotes
 
