@@ -84,6 +84,11 @@ Summarizes lockstep and client-server implementation and provides sample
 command message samples.
 
 * [The making of Supreme Commander](https://www.eurogamer.net/articles/2018-01-07-the-making-of-supreme-commander) 2018
+* [How is starcraft 2 so incredibly responsive?](https://www.reddit.com/r/starcraft/comments/8q0jka/how_is_starcraft_2_so_incredibly_responsive/) 2018
+
+Starcraft II's internal tick rate is 16 - 20Hz; apparently other RTS can be as
+low as 8Hz. Good reference / justification.
+
 
 ## Code References
 

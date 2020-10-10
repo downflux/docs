@@ -23,13 +23,14 @@ potential implementation of client-state interaction.
 
 ### Assumptions
 
-| Metric                | Estimated Bound                                                                 |
-| --------------------- | ------------------------------------------------------------------------------- |
-| Players               | 10                                                                              |
-| Controllable Entities | 1k                                                                              |
-| Map Size              | 1k x 1k tiles                                                                   |
-| Network Latency       | 100ms                                                                           |
-| Network Bandwidth     | 1Mbps / player (see [justification](https://gamedev.stackexchange.com/a/96184)) |
+| Metric                | Estimated Bound                                                                                                                    |
+| --------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| Players               | 10                                                                                                                                 |
+| Controllable Entities | 1k                                                                                                                                 |
+| Map Size              | 1k x 1k tiles                                                                                                                      |
+| Server Tick Rate      | 10Hz (see [justification](https://www.reddit.com/r/starcraft/comments/8q0jka/e0fhawd?utm_source=share&utm_medium=web2x&context=3)) |
+| Network Latency       | 100ms                                                                                                                              |
+| Network Bandwidth     | 1Mbps / player (see [justification](https://gamedev.stackexchange.com/a/96184))                                                    |
 
 ## Related Work
 
