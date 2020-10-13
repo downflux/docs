@@ -2,7 +2,7 @@
 
 ## Articles
 
-* [1500 Archers on a 28.8: Network Programming in Age of Empires and Beyond ](https://zoo.cs.yale.edu/classes/cs538/readings/papers/terrano_1500arch.pdf) 2001
+* [1500 Archers on a 28.8: Network Programming in Age of Empires and Beyond](https://zoo.cs.yale.edu/classes/cs538/readings/papers/terrano_1500arch.pdf) 2001
 
 Seminal paper on how Age of Empires II dealt with the networking problem by
 implementing client lockstep simulations. Lockstep implementation here requires
