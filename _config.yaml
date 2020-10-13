@@ -1,2 +1,5 @@
 remote_theme: piharpi/jekyll-klise
+plugins:
+  - jekyll-feed
+
 markdown: kramdown
