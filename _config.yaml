@@ -13,7 +13,7 @@ locale: "en-US"
 title: "DownFlux Documentation"
 description: "Archive of technical, API, unit, and balance design documentation."
 url: "https://downflux.github.io"
-baseurl: "/docs"
+baseurl: "/"
 repository: "downflux/docs"
 footer:
   links:
@@ -28,7 +28,7 @@ footer:
       url: "https://reddit.com/r/downflux"
     - label: "Sitemap"
       icon: "fas fa-fw fa-sitemap"
-      url: "/docs/sitemap"
+      url: "/sitemap"
 # Custom default rendering.
 defaults:
   - scope:
