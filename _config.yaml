@@ -19,12 +19,11 @@ footer:
     - label: "Reddit"
       icon: "fab fa-fw fa-reddit"
       url: "https://reddit.com/r/downflux"
-
 # Custom default rendering.
 defaults:
   - scope:
       path: ""
     values:
-      layout: "default"
+      layout: "single"
 
 markdown: kramdown
