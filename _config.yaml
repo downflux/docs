@@ -25,12 +25,19 @@ footer:
     - label: "Sitemap"
       icon: "fas fa-fw fa-sitemap"
       url: "/sitemap"
-
 # Custom default rendering.
 defaults:
   - scope:
       path: ""
+      type: "pages"
+    values:
+      layout: "wide"
+      author_profile: false
+  - scope:
+      path: "design"
+      type: "pages"
     values:
       layout: "single"
+      toc: true
 
 markdown: kramdown
