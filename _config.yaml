@@ -2,6 +2,9 @@
 remote_theme: mmistakes/minimal-mistakes
 plugins:
   - jekyll-include-cache
+  - jekyll-feed
+  - jekyll-gist
+  - jekyll-sitemap
 locale: "en-US"
 title: "DownFlux Documentation"
 description: "Archive of technical, API, unit, and balance design documentation."
