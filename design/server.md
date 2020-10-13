@@ -1,7 +1,3 @@
----
-layout: default
----
-
 # DownFlux Networking Design
 Client-Server Model for a Large-Scale RTS
 
