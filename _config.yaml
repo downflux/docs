@@ -15,9 +15,6 @@ description: "Archive of technical, API, unit, and balance design documentation.
 url: "https://docs.downflux.com"
 baseurl: "/"
 repository: "downflux/docs"
-main:
-  - title: "GitHub"
-    url: "https://github.com/downflux"
 footer:
   links:
     - label: "Twitter"
