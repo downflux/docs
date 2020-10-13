@@ -15,11 +15,11 @@ description: "Archive of technical, API, unit, and balance design documentation.
 url: "https://docs.downflux.com"
 baseurl: "/"
 repository: "downflux/docs"
+main:
+  - title: "GitHub"
+    url: "https://github.com/downflux"
 footer:
   links:
-    - label: "GitHub"
-      icon: "fab fa-fw fa-github"
-      url: "https://github.com/downflux"
     - label: "Twitter"
       icon: "fab fa-fw fa-twitter"
       url: "https://twitter.com/downfluxgame"
