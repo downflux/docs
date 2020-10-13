@@ -31,13 +31,13 @@ defaults:
       path: ""
       type: "pages"
     values:
-      layout: "wide"
+      layout: "singe"
+      classes: "wide"
       author_profile: false
   - scope:
       path: "design"
       type: "pages"
     values:
-      layout: "single"
       toc: true
 
 markdown: kramdown
