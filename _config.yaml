@@ -29,14 +29,14 @@ footer:
 defaults:
   - scope:
       path: ""
-      type: "pages"
+      type: pages
     values:
-      layout: "singe"
-      classes: "wide"
+      layout: single
+      classes: wide
       author_profile: false
   - scope:
       path: "design"
-      type: "pages"
+      type: pages
     values:
       toc: true
 
