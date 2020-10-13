@@ -1,5 +1,30 @@
+# Minimal Mistakes theme configuration
 remote_theme: mmistakes/minimal-mistakes
 plugins:
   - jekyll-include-cache
+locale: "en-US"
+title: "DownFlux Documentation"
+description: "Archive of technical, API, unit, and balance design documentation."
+url: "https://downflux.github.io"
+baseurl: "/docs"
+repository: "downflux/docs"
+footer:
+  links:
+    - label: "GitHub"
+      icon: "fab fa-fw fa-github"
+      url: "https://github.com/downflux"
+    - label: "Twitter"
+      icon: "fab fa-fw fa-twitter"
+      url: "https://twitter.com/downfluxgame"
+    - label: "Reddit"
+      icon: "fab fa-fw fa-reddit"
+      url: "https://reddit.com/r/downflux"
+
+# Custom default rendering.
+defaults:
+  - scope:
+      path: ""
+    values:
+      layout: "default"
 
 markdown: kramdown
