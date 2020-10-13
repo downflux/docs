@@ -1,10 +1,14 @@
 # Minimal Mistakes theme configuration
 remote_theme: mmistakes/minimal-mistakes
 plugins:
+  # Minimal Mistakes
   - jekyll-include-cache
   - jekyll-feed
   - jekyll-gist
   - jekyll-sitemap
+  
+  # Custom
+  - jekyll-titles-from-headings
 locale: "en-US"
 title: "DownFlux Documentation"
 description: "Archive of technical, API, unit, and balance design documentation."
@@ -42,5 +46,9 @@ defaults:
       toc_label: "Contents"
       toc_icon: "list"
       classes: false
+
+# Remove H1 headings from content since page.title renders it anyways.
+titles_from_headings:
+  strip_title: true
 
 markdown: kramdown
