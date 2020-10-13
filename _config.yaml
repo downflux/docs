@@ -40,7 +40,7 @@ defaults:
     values:
       toc: true
       toc_label: "Contents"
-      toc_icon: false
+      toc_icon: "list"
       classes: false
 
 markdown: kramdown
