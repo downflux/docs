@@ -1,6 +1,3 @@
-remote_theme: piharpi/jekyll-klise
-plugins:
-  - jekyll-feed
-  - jekyll-remote-theme
+remote_theme: mmistakes/minimal-mistakes
 
 markdown: kramdown
