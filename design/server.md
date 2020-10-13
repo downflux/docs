@@ -342,8 +342,7 @@ replay purposes.
 
 [^1]: Terrano, Mark. "1500 Archers on a 28.8: Network Programming in Age of Empires and Beyond." 2005.
 
-[^2]:
-  Discussing the specifics of the rendering engine is out of scope of
+[^2]: Discussing the specifics of the rendering engine is out of scope of
   this design document.
 
 [^3]: Botea, Adi. "Near optimal hierarchical path-finding." 2004.
@@ -352,13 +351,11 @@ replay purposes.
 
 [^5]: Claypool, Mark. "The effect of latency on user performance in Real-Time Strategy games." 2005.
 
-[^6]:
-  Stolen from
+[^6]: Stolen from
   [The Tech of Planetary Annihilation: ChronoCam](https://www.forrestthewoods.com/blog/tech_of_planetary_annihilation_chrono_cam/).
   Curves are linear transformations of a variable trajectory. This transformation
   saves on data being sent to the client.
 
-[^7]:
-  We need to decide if we want a generic trigger queue, or a queue
+[^7]: We need to decide if we want a generic trigger queue, or a queue
   broken down by category, with the `CurveID` still mapping back to a global
   lookup map.
