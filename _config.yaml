@@ -24,7 +24,7 @@ footer:
       url: "https://reddit.com/r/downflux"
     - label: "Sitemap"
       icon: "fas fa-fw fa-sitemap"
-      url: "/sitemap"
+      url: "/docs/sitemap"
 # Custom default rendering.
 defaults:
   - scope:
