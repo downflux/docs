@@ -7,4 +7,7 @@ group: :jekyll_plugins do
   gem "jekyll-include-cache"
   gem "jekyll-paginate"
   gem "jekyll-sitemap"
+  
+  # Not part of Minimal Mistakes
+  gem "jekyll-titles-from-headings"
 end
