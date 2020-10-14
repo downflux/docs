@@ -35,7 +35,7 @@ potential implementation of client-state interaction.
 ## Related Work
 
 A list of historically relevant papers and articles can be found in the
-[DownFlux docs repo](https://github.com/downflux/docs/blob/main/brainstorm/networking.md).
+[DownFlux docs repo](/brainstorm/networking.md).
 
 ## Infrastructure
 
