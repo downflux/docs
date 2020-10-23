@@ -4,3 +4,4 @@ We will periodically publish formal design docs relating to DownFlux here. Pleas
 ## Published Design Docs
 * [Networking Brainstorm](brainstorm/networking.md)
 * [DownFlux Networking Design](design/server.md)
+* [Client Design](design/client.md)
