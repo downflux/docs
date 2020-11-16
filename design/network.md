@@ -51,9 +51,7 @@ the set _E_ of game entities and _C_ the set of curves representing game
 metrics evolving over time. We represent the merging of an existing, valid
 game state with an incoming StreamData message as
 
-$$
-S \prime := S \cup \Delta S = (E \cup \Delta E, C \cup \Delta C)
-$$
+S' := S ∪ ΔS == (E ∪ ΔE, C ∪ ΔC)
 
 The set of entities here is an _append-only_ mathematical set, i.e. there are
 no duplicate elements. Because entities are uniquely identified by a UID, we
@@ -76,9 +74,7 @@ merging only new predictions).
 
 We can formalize these definitions as 
 
-$$
-S \leq S \prime \iff E \subseteq E \prime \and C \leq C \prime
-$$
+S ≤ S' ⇔ E ⊆ E' ^ C ≤ C'
 
 We can compare the curves by comparing the server tick.
 
