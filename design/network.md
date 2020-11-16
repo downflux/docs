@@ -44,14 +44,16 @@ These messages are sent once per server tick. To save on bandwidth, a message
 will be sent only if a delta exists -- if both the list of entities and curve
 deltas is empty, then the server will skip sending the message for that tick.
 
-### Game State Monotonicity[^1]
+### Game State Monotonicity
 
-The game state _S_ may be totally represented by the set _E_ of game entities
-and _C_ the set of curves representing game metrics evolving over time. We
-represent the merging of an existing, valid game state with an incoming
-StreamData message as
+The monotonically increasing[^1] game state _S_ may be totally represented by
+the set _E_ of game entities and _C_ the set of curves representing game
+metrics evolving over time. We represent the merging of an existing, valid
+game state with an incoming StreamData message as
 
-S' := S ∪ ΔS == (E ∪ ΔE, C ∪ ΔC)
+$$
+S \prime := S \cup \Delta S == (E \cup \Delta E, C \cup \Delta C)
+$$
 
 The set of entities here is an _append-only_ mathematical set, i.e. there are
 no duplicate elements. Because entities are uniquely identified by a UID, we
@@ -74,7 +76,9 @@ merging only new predictions).
 
 We can formalize these definitions as 
 
-S ≤ S' ⇔ E ⊆ E' ^ C ≤ C'
+$$
+S \leq S \prime \iff E \subseteq E \prime \and C \leq C \prime
+$$
 
 We can compare the curves by comparing the server tick.
 
