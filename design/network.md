@@ -146,6 +146,7 @@ diagram as defined in [Figure 1](#figure-1). A metadata object
 will store a Golang channel object, used to send data to the gRPC server.
 
 ![Executor client flow diagram](assets/network_client_flow_dag.png)
+
 <a name="figure-1">Figure 1</a>: Executor client flow diagram.
 
 We are defining the states `NEW`, `DESYNCED`, `OK`, and `TEARDOWN` as follows:
