@@ -52,7 +52,7 @@ metrics evolving over time. We represent the merging of an existing, valid
 game state with an incoming StreamData message as
 
 $$
-S \prime := S \cup \Delta S == (E \cup \Delta E, C \cup \Delta C)
+S \prime := S \cup \Delta S = (E \cup \Delta E, C \cup \Delta C)
 $$
 
 The set of entities here is an _append-only_ mathematical set, i.e. there are
