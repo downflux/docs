@@ -1,7 +1,7 @@
 # DownFlux Networking Design
 Client-Server Model for a Large-Scale RTS
 
-| Status         | draft                 |
+| Status         | final                 |
 | :------------- | :-------------------- |
 | Author(s)      | minke.zhang@gmail.com |
 | Contributor(s) |                       |
@@ -328,15 +328,14 @@ replay purposes.
 
 ## Work Estimates
 
-| Work Item                   | Time Estimate            | Status      |
-| --------------------------- | ------------------------ | ----------- |
-| barebones client and server | 1 week                   | DONE        |
-| implement tick phase        | 1 day                    | DONE        |
-| implement input queue       | 1 week                   | DONE        |
-| implement output queue      | 1 week                   | DONE        |
-| implement create entities   | 1 week                   | DEMO        |
-| implement pathfind          | 1 week                   | MVP (no flow field) |
-| ...                         | lifetime of the universe | NOT STARTED |
+| Work Item                   | Time Estimate | Status              |
+| --------------------------- | --------------| ------------------- |
+| barebones client and server | 1 week        | DONE                |
+| implement tick phase        | 1 day         | DONE                |
+| implement input queue       | 1 week        | DONE                |
+| implement output queue      | 1 week        | DONE                |
+| implement create entities   | 1 week        | DEMO                |
+| implement pathfind          | 1 week        | MVP (no flow field) |
 
 ## Footnotes
 
