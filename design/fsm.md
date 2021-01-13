@@ -70,23 +70,9 @@ game and metadata object as appropriate.
 
 ### Components
 
+![FSM / Visitor relationship diagram](assets/fsm_visitor.png)
 
-<table>
-  <tr>
-   <td>
-
-<p id="gdcalert1" ><span style="color: red; font-weight: bold">>>>>>  gd2md-html alert: inline image link here (to images/image1.png). Store image on your image server and adjust path/filename/extension if necessary. </span><br>(<a href="#">Back to top</a>)(<a href="#gdcalert2">Next alert</a>)<br><span style="color: red; font-weight: bold">>>>>> </span></p>
-
-
-<img src="images/image1.png" width="" alt="alt_text" title="image_tooltip">
-
-   </td>
-  </tr>
-  <tr>
-   <td>Figure 1: FSM / Visitor relationship diagram
-   </td>
-  </tr>
-</table>
+<a name="figure-1">Figure 1</a>: FSM / Visitor relationship diagram.
 
 #### Game State
 
@@ -172,22 +158,11 @@ This function returns `true` if the input Command arg is of lower priority
 
 ##### Chaining FSMs
 
-<table>
-  <tr>
-   <td>
+![Chaining FSMs](assets/fsm_chaining.png)
 
-<p id="gdcalert2" ><span style="color: red; font-weight: bold">>>>>>  gd2md-html alert: inline image link here (to images/image2.png). Store image on your image server and adjust path/filename/extension if necessary. </span><br>(<a href="#">Back to top</a>)(<a href="#gdcalert3">Next alert</a>)<br><span style="color: red; font-weight: bold">>>>>> </span></p>
-
-
-<img src="images/image2.png" width="" alt="alt_text" title="image_tooltip">
-
-   </td>
-  </tr>
-  <tr>
-   <td>Figure 2: Chaining FSMs; note that a visitor may queue additional dependent flows, but never accesses the dependent FSM itself, nor the dependent flow visitor.
-   </td>
-  </tr>
-</table>
+<a name="figure-2">Figure 2</a>: Chaining FSMs; note that a visitor may queue
+additional dependent flows, but never accesses the dependent FSM itself, nor
+the dependent flow visitor.
 
 The command may be a part of a larger, more intricate chain of commands -- an
 attack-move command consists of both chasing a target and actually attacking
@@ -203,7 +178,7 @@ new destination -- this pointer is set via
 func (c ChaseCommand) SetMove(m MoveCommand) error
 ```
 
-See Figure 2 for more details.
+See [Figure 2](#figure-2) for more details.
 
 ###### Example
 
@@ -274,22 +249,9 @@ mutated serially or concurrently, depending on the list implementation.
 
 ##### Merge
 
-<table>
-  <tr>
-   <td>
+![FSM List Merge](assets/fsm_list_merge.png)
 
-<p id="gdcalert3" ><span style="color: red; font-weight: bold">>>>>>  gd2md-html alert: inline image link here (to images/image3.png). Store image on your image server and adjust path/filename/extension if necessary. </span><br>(<a href="#">Back to top</a>)(<a href="#gdcalert4">Next alert</a>)<br><span style="color: red; font-weight: bold">>>>>> </span></p>
-
-
-<img src="images/image3.png" width="" alt="alt_text" title="image_tooltip">
-
-   </td>
-  </tr>
-  <tr>
-   <td>Figure 3: FSM List merge operation
-   </td>
-  </tr>
-</table>
+<a name="figure-3">Figure 3</a>: FSM List merge operation.
 
 As stated above, for each command type, we keep two FSM list instances. The
 cache is used for keeping track of client (e.g. player) input, while the
@@ -339,10 +301,10 @@ reference to the associated FSM List of the dependent command type_. The
 visitor is responsible for scheduling the newly created command, and will
 schedule the command in the _source of truth_, not the cache.
 
-See Figure 2; note that Visitor<sub>B</sub> does not have a data dependency on
-FSM<sub>A</sub> -- setting this limitation greatly simplifies the separation of
-responsibilities between the visitor and the command metadata, and should allow
-for more scalability.
+See [Figure 2](#figure-2); note that Visitor<sub>B</sub> does not have a data
+dependency on FSM<sub>A</sub> -- setting this limitation greatly simplifies
+the separation of responsibilities between the visitor and the command
+metadata, and should allow for more scalability.
 
 Also note that although we have said FSMs are read-only, there is a read-write
 dependency from FSM<sub>B</sub> to FSM<sub>A</sub>. This write operation is
