@@ -33,13 +33,11 @@ game and metadata object as appropriate.
 
 ## Detailed Design
 
-### Components
-
 ![FSM / Visitor relationship diagram](assets/fsm_visitor.png)
 
 <a name="figure-1">Figure 1</a>: FSM / Visitor relationship diagram.
 
-#### Game State
+### Game State
 
 The game state represents the totality of game data. This state may include
 game entities e.g. tank instances, the curves representing an entity property
@@ -48,7 +46,7 @@ game tick, etc.
 
 A subset of the game state is broadcast per tick to all connected clients.
 
-#### FSM (Command Metadata)
+### FSM (Command Metadata)
 
 A command is represented with a finite state machine with a fully defined
 transition graph. For example, the move command consists of the `PENDING`,
@@ -76,7 +74,7 @@ subset of the game state, or its own internal state
 (e.g. `nextPartialMoveTick`), but _must not mutate itself_. The command manager
 must manually make the mutations.
 
-##### Virtual State Transitions
+#### Virtual State Transitions
 
 The command metadata will be used to calculate the "real" state of the command
 at any given point in time -- if we schedule a move command to occur ten ticks
@@ -89,39 +87,39 @@ See
 [Time Invariant Finite State Machines](https://blog.kevmo314.com/time-invariant-finite-state-machines.html)
 for more details.
 
-##### API
+#### API
 
-###### func (c Command) ID() ID
+##### func (c Command) ID() ID
 
 The command may need to generate a UUID at init time -- this ID will be used to
 check for duplicates of the command, and for calculating what commands of the
 same type may conflict with one another, e.g. two move commands on the same
 unit.
 
-###### func (c Command) Accept(v Visitor) error
+##### func (c Command) Accept(v Visitor) error
 
 A command must allow an entry point for the visitor. This is part of the
 [standard visitor pattern](https://en.wikipedia.org/wiki/Visitor_pattern) API.
 
-###### func (c Command) State() (State, error)
+##### func (c Command) State() (State, error)
 
 A command will return its current, _virtual_ (i.e. calculated) state. This will
 be used by the caller to determine what actions (if any) should be taken at the
 current point in time.
 
-###### func (c Command) To(State) error
+##### func (c Command) To(State) error
 
 A command will surface a way to transition between different states in the
 internal FSM. This function will error out if there is no valid transition path
 from the current internal virtual state to the target.
 
-###### func (c Command) Precedence(d Command) bool
+##### func (c Command) Precedence(d Command) bool
 
 A command must know if it may be superseded by another higher-priority command.
 This function returns `true` if the input Command arg is of lower priority
 (i.e. "c preceded d").
 
-##### Chaining FSMs
+#### Chaining FSMs
 
 ![Chaining FSMs](assets/fsm_chaining.png)
 
@@ -145,7 +143,7 @@ func (c ChaseCommand) SetMove(m MoveCommand) error
 
 See [Figure 2](#figure-2) for more details.
 
-###### Example
+##### Example
 
 Consider our Attack command; logically, we have a background task in which the
 attacker constantly chases the target; if the target is within attack range,
@@ -167,7 +165,7 @@ func (c *AttackCommand) Status() Status {
 }
 ```
 
-#### FSM List
+### FSM List
 
 An FSM list will keep track of all commands of a specific type (e.g. all Move
 commands). This list may be mutated by an arbitrary visitor (e.g. when a Chase
@@ -177,9 +175,9 @@ provided via the `Accept` function.
 N.B.: Technically this may be implemented as a simple slice, but our underlying
 implementation uses a map struct instead for fast queries.
 
-##### API
+#### API
 
-###### func (l List) Clear() error
+##### func (l List) Clear() error
 
 At the beginning of a game tick, the list will be required to delete any
 references to `FINISHED` or `CANCELED`-state commands.
@@ -188,7 +186,7 @@ Any dependent commands which have references to these deleted commands will
 still have access to the data structs -- in our Golang implementation, the
 underlying memory is not freed until the last reference is deleted.
 
-###### func (l List) Merge(m List) error
+##### func (l List) Merge(m List) error
 
 Our engine implementation keeps two lists per command type -- one for incoming
 user requests (the "cache"), and one as our source of truth ("source"). At the
@@ -201,18 +199,17 @@ and replace it with the new user command. As in the case of the `Clear()`
 function, the chained command(s) will still have access to the data of the
 deleted command.
 
-###### func (l List) Append(c Command) error
+##### func (l List) Append(c Command) error
 
 The list will expose a generic way to add a new command.
 
-
-###### func (l List) Accept(v Visitor) error
+##### func (l List) Accept(v Visitor) error
 
 The list will also be exposed to the visitor -- this function usually only acts
 as an iterator wrapper around the tracked commands. Commands here may be
 mutated serially or concurrently, depending on the list implementation.
 
-##### Merge
+#### Merge
 
 ![FSM List Merge](assets/fsm_list_merge.png)
 
@@ -225,7 +222,7 @@ After we clear the stale commands from the source list, we will then merge in
 the cache -- this allows us to atomically schedule the client input, and to
 override existing commands in the queue.
 
-#### Visitors
+### Visitors
 
 The visitor is our execution phase in the game. As stated above, this is the
 standard visitor of the visitor pattern; however, the key difference here is
@@ -236,10 +233,10 @@ us to have the opportunity to have a formalized definition for each command
 type, and greatly increases the scalability of our game as we add more and more
 commands to the execution model.
 
-##### API
+#### API
 
 
-###### func (v Visitor) Visit (a Agent) error
+##### func (v Visitor) Visit (a Agent) error
 
 The Visitor mutates the game state and the underlying command via the `Visit()`
 function. This function generally
@@ -255,7 +252,7 @@ state other than `EXECUTING`. In the `EXECUTING` phase, the visitor will
 1. schedule when the next partial move should be calculated (via
    `MoveCommand.SchedulePartialMove(float64)`).
 
-##### Chaining Commands
+#### Chaining Commands
 
 It is in the Visitor that any dependent flows for the visitor-specific command
 may be generated -- e.g. the newly-created Move commands that make up the
@@ -276,7 +273,7 @@ dependency from FSM<sub>B</sub> to FSM<sub>A</sub>. This write operation is
 just a `Command.To(CANCELED)` call in case we need to halt the operation, and
 should not be any other mutation.
 
-###### Example
+##### Example
 
 For our Attack command defined above, our visitor would query for the state,
 and mutate the game state:
@@ -296,7 +293,7 @@ func (v *AttackVisitor) Visit(c *AttackCommand) error {
 Note that neither the Attack command nor the visitor modifies the dependent
 Chase flow - this independent execution of commands is crucial for scalability.
 
-##### Dirty State
+#### Dirty State
 
 In the case the Visitor updates the game state via a curve, or creates a new
 entity, it is responsible for updating the game's dirty state list. This list
