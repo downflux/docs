@@ -134,26 +134,6 @@ calling out action-specific handlers
 The renderer will call the server (via the API client) with appropriate
 commands at this time.
 
-# See Also
+## See Also
 
 * [DownFlux Networking Design](server.md)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
