@@ -310,16 +310,19 @@ problematic in our ad hoc solution:
 
 * > If there are state changes to the object, it is up to the command to
   > manually check.
+
   Because the command _metadata_ does state checking for us, and because we know
   the check is idempotent since the underlying game state is deterministic
   barring user-input,[^6] the execution model of the command is greatly
   simplified.
 * > The `Execute` function needs to keep track of the state of _all_ dependent
   > scheduling queues
+
   The game state accessible by the command execution logic is scoped
   specifically by the metadata -- no extra data is being surfaced, lowering our
   risk of wanton data access.
 * > Making the command iterate over its own schedule just seems wrong.
+
   The execution logic behavior is solely dependent on the metadata; no
   information about the schedule at large is leaked.
 * Additionally, because we are instead mutating and iterating over the metadata,
