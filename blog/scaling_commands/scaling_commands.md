@@ -72,7 +72,7 @@ func (c *MoveCommand) Execute(args interface{}) error {
 }
 ```
 
-<a name="figure-1">Figure 1</a>: Simple implementation of the `move` command.
+<a name="figure-1"></a>Figure 1: Simple implementation of the `move` command.
 
 Simple!
 
@@ -85,7 +85,7 @@ execution of the rest of the path (see [Figure 2](#figure-2)).
 
 ![Partial Move DAG](assets/scaling_commands_partial_move.png)
 
-<a name="figure-2">Figure 2</a>: Partial path diagram. The command should only
+<a name="figure-2"></a>Figure 2: Partial path diagram. The command should only
 calculate p<sub>0</sub> first; at some time t in the future, recalculate the
 path (which may involve further sub-path iterations).
 
@@ -136,7 +136,7 @@ func (c *MoveCommand) Execute(t Tick) error {
 }
 ```
 
-<a name="figure-3">Figure 3</a>: Toy `move` command implementation v2 -- here we
+<a name="figure-3"></a>Figure 3: Toy `move` command implementation v2 -- here we
 enqueue a delayed move command into the main command queue. This queue may have
 client- or other server-initiated command scheduling, so when we update the
 queue, we need to ensure there is a single, canonical execution flow.
@@ -198,7 +198,7 @@ func (c *MoveCommand) Visit(e Entity) error {
 }
 ```
 
-<a name="figure-4">Figure 4</a>: The architectural change counterpart to the
+<a name="figure-4"></a>Figure 4: The architectural change counterpart to the
 changes made in [Figure 3](#figure-3). The key takeaway is that our "`Execute`"
 function (`Visit`) no longer takes in an `interface{}` input -- we are starting
 to discourage implementing commands with arbitrary ease, with the return of a
@@ -244,7 +244,7 @@ type MoveCommandArgs struct {
 }
 ```
 
-<a name="figure-5">Figure 5</a>: Expanded `MoveCommandArgs` type from
+<a name="figure-5"></a>Figure 5: Expanded `MoveCommandArgs` type from
 [Figure 1](#figure-1).
 
 One key observation is that we know the `move` command has finished if
@@ -261,7 +261,7 @@ Let's consider the state diagram of the `move` command first:[^4]
 
 ![Move DAG](assets/scaling_commands_move_dag.png)
 
-<a name="figure-6">Figure 6</a>: `move` state diagram.
+<a name="figure-6"></a>Figure 6: `move` state diagram.
 
 * `FINISHED`: As stated above, we know a command is finished if the source has
   arrived at the destination at a specific tick.
@@ -300,7 +300,7 @@ func (v *MoveCommand) Visit(m MoveCommandArgs) {
 }
 ```
 
-<a name="figure-7">Figure 7</a>: Final iteration of the command structure.
+<a name="figure-7"></a>Figure 7: Final iteration of the command structure.
 
 On the surface, this honestly doesn't look that different from
 [Figure 1](#figure-1)! So why make this journey at all then?
@@ -360,7 +360,7 @@ func (c *AttackCommand) Visit(m AttackMetadata) {
 }
 ```
 
-<a name="figure-8">Figure 8</a>: Simplified `attack` command implementation.
+<a name="figure-8"></a>Figure 8: Simplified `attack` command implementation.
 **Note that the `AttackMetadata.Status` function is read-only** -- this is by
 design. The metadata object can only mutate the game state if the command
 executor explicitly calls a mutate endpoint. See the design doc for more
@@ -436,7 +436,7 @@ view our code.
   CRDTs.
 
 
-### [A Digression on Attacking](#a-digression-on-attacking)
+### <a name="a-digression-on-attack-variants"></a>A Digression on Attack Variants
 
 While editing this document, a [friend](https://www.jonkimbel.com) pointed out
 that the toy implementation of the `attack` command does not fully specify some
@@ -488,7 +488,7 @@ func (c *ForgetfulAttackCommand) Visit(m ForgetfulAttackMetadata) {
 }
 ```
 
-<a name="figure-9">Figure 9</a>: Alternative `attack` command implementation.
+<a name="figure-9"></a>Figure 9: Alternative `attack` command implementation.
 Which cancels itself if the target exits range via a read-only operation.
 
 ### Partial Tick Execution
@@ -537,4 +537,4 @@ currently implemented in our game yet, pending load testing.
 
 [^7]: For a more in-depth discussion of the `attack` command
     implementation details, see
-    [A Digression on Attacking](#a-digression-on-attacking)
+    [A Digression on Attack Variants](#a-digression-on-attack-variants)
