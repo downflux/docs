@@ -1,4 +1,4 @@
 # docs
 Living repo for DownFlux documentation.
 
-Rendering for these posts are delegated to github.com/downflux/blog.
+Rendering for these posts are delegated to [github.com/downflux/blog](https://github.com/downflux/blog).
