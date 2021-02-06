@@ -24,8 +24,8 @@ maybe you'll find something worth using in your own efforts.
 
 ## Jargon
 
-* state mutations, flows, commands -- a series of changes to the game state
-  (e.g. map, entities, etc.) which achieve a specific end-goal (e.g. `move`)
+* state mutations, flows, commands: a series of changes to the game state (e.g.
+  map, entities, etc.) which achieve a specific end-goal (e.g. `move`)
 
 ### Flow Examples
 
@@ -43,7 +43,7 @@ implemented the `move` command; we decided on a basic command pattern, where on
 each tick, the server will run through all installed commands and call a simple
 API.
 
-```
+```golang
 func (s *Server) Run() {
   for {
     for c := range s.Commands {
@@ -91,7 +91,7 @@ path (which may involve further sub-path iterations).
 
 With the partial path logic, our command now looks something like this:[^2]
 
-```
+```golang
 func (s *Server) Run() {
   for var c := range s.Commands {
     c.Execute(curTick)
@@ -179,7 +179,7 @@ This line of questions lead us to use the _canonical_
 [visitor model](https://en.wikipedia.org/wiki/Visitor_pattern) example, i.e.
 where we implement `Accept` on tangible objects.
 
-```
+```golang
 func (s *Server) Run() {
   for var v := range s.Commands {
     for var e := range s.Entities {
@@ -216,8 +216,8 @@ we decouple these two things?
 
 A complementary issue is suggested by the command API:
 
-```
-  c.Visit(e Entity)
+```golang
+c.Visit(e Entity)
 ```
 
 This is clear when our command mutates a single object like `move` -- but what
@@ -236,7 +236,7 @@ objects don't really describe the underlying state of the game (e.g. the
 position of objects); rather, they describe the state of the state _mutations_.
 We already encountered this of sorts in [Figure 3](#figure-3):
 
-```
+```golang
 type MoveCommandArgs struct {
   scheduledTick Tick
   source        Moveable
@@ -249,7 +249,7 @@ type MoveCommandArgs struct {
 
 One key observation is that we know the `move` command has finished if
 
-```
+```golang
 source.Location.Get(currentTick) == destination
 ```
 
@@ -279,7 +279,7 @@ implementation model -- we've demonstrated previously that there is enough
 information in the struct to allow the command to execute. Because this is the
 only data that matters to the command, let's iterate over that instead.
 
-```
+```golang
 func (s *Server) Run() {
   for var v := range s.Visitors {
     for var q := range s.CommandQueue[v.Type()] {
@@ -335,7 +335,7 @@ tests written for these commands.
 Let's apply the same pattern to the `attack` command, a flow which has a
 dependent `chase` action.
 
-```
+```golang
 type AttackMetadata struct {
   s     CanAttack
   t     CanDie  // Mortal?
@@ -359,7 +359,6 @@ func (c *AttackCommand) Visit(m AttackMetadata) {
   }
 }
 ```
-
 
 <a name="figure-8">Figure 8</a>: Simplified `attack` command implementation.
 **Note that the `AttackMetadata.Status` function is read-only** -- this is by
@@ -460,7 +459,7 @@ attack the same target until the target dies. How do we extend this command?
 We can envision an `attack` variant that forgets the target after the target
 goes out of range:
 
-```
+```golang
 type ForgetfulAttackMetadata struct {
   s           CanAttack
   t           CanDie
