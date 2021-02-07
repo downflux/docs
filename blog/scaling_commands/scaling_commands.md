@@ -94,7 +94,7 @@ Our second order approximation takes into consideration `GetPath` is expensive
 that the player direct units to a different location before the unit reaches the
 target, wasting a lot of compute cycles.[^1] Therefore, we want to calculate and
 set a partial trajectory instead, with delayed execution of the rest of the
-path.[^8]
+path.[^2]
 
 ![Partial Move DAG](assets/scaling_commands_partial_move.png)
 
@@ -102,7 +102,7 @@ path.[^8]
 calculate p<sub>0</sub> first; at some time t in the future, recalculate the
 path (which may involve further sub-path iterations).
 
-With the partial path logic, our command now looks something like this:[^2]
+With the partial path logic, our command now looks something like this:[^3]
 
 ```golang
 func (s *Server) doTick() {
@@ -161,7 +161,7 @@ Kind of a pain, but still doable.
 
 This model worked well enough for us to get a rudimentary frontend client
 running; however, a gut check seems to indicate major scalability issues with
-this approach.[^3] In particular,
+this approach.[^4] In particular,
 
 1. A command may act on multiple entity types, and an entity may have multiple
   mutation flows -- the implementations so far already demonstrates this
@@ -333,7 +333,7 @@ underlying system. _It does not matter how we calculate this state!_ In
 variable via `SetStatusOrDie()`, but we can also _treat the state as a generic
 read-only operation on the system_.
 
-As an example, let's consider the state diagram of the `move` command:[^4]
+As an example, let's consider the state diagram of the `move` command:[^5]
 
 * `FINISHED`: A `move` command is finished if the source entity has arrived at
   the given destination.
@@ -343,7 +343,7 @@ As an example, let's consider the state diagram of the `move` command:[^4]
 * `EXECUTING`: If `m.ScheduledTick` equals current game tick, the command needs
   to take action and actually calculate the path of the object. At the end of
   the execution phase, the scheduled tick should be updated.
-* `CANCELED`:[^5] An externally triggered transition if e.g. the client
+* `CANCELED`:[^6] An externally triggered transition if e.g. the client
   specifies another move command in the meantime. This may need to be explicitly
   set.
 
@@ -504,7 +504,7 @@ func (c *AttackCommand) Visit(m AttackMetadata) {
 }
 ```
 
-<a name="figure-11"></a>Figure 11: Simplified `attack` command implementation.[^9]
+<a name="figure-11"></a>Figure 11: Simplified `attack` command implementation.[^7]
 
 Dependencies in our framework are modeled by a pointer in the metadata to
 another metadata object. This allows us to hide the specifics of the dependency
@@ -615,7 +615,7 @@ func (c *ForgetfulAttackCommand) Visit(m ForgetfulAttackMetadata) {
 }
 ```
 
-<a name="figure-9"></a>Figure 9: Alternative `attack` command implementation.
+<a name="figure-12"></a>Figure 12: Alternative `attack` command implementation.
 Which cancels itself if the target exits range via a read-only operation.
 
 ### Partial Tick Execution
@@ -636,35 +636,28 @@ currently implemented in our game yet, pending load testing.
     after the initial coarse-grain search. This may be a nice optimization route
     to go down in the future.
 
-[^8]: Future implementations of pathfinding, e.g. via flow fields or
+[^2]: Future implementations of pathfinding, e.g. via flow fields or
     navmesh-based solutions, may eliminate the need for partial paths.
 
-[^2]: In reality, this step was implemented along with initial visitor pattern
+[^3]: In reality, this step was implemented along with initial visitor pattern
     migration (explained later), but we're highlighting a rather important
     motivating point for seeking better approaches to the problem.
 
-[^3]: While `interface{}` inputs are undesirable, they aren't necessarily an
+[^4]: While `interface{}` inputs are undesirable, they aren't necessarily an
     _architectural_ problem. We're concerned with what are potential
     project-terminators due to non-maintainability.
 
-[^4]: For more information on this, see
+[^5]: For more information on this, see
     [Time-Invariant Finite State Machines](https://blog.kevmo314.com/time-invariant-finite-state-machines.html).
     State transitions are traditionally triggered by an "external" user; we are
     expanding the FSM here to allow for the possibility that transitions may be
     triggered without an explicit outside trigger action. This allowance gives
     us a lot of flexibility in modeling semi-autonomous commands.
 
-[^5]: Sidenote, I learned the objectively better "cancelled" spelling is
+[^6]: Sidenote, I learned the objectively better "cancelled" spelling is
     British, and so have reverted to the inferior but semantically consistent
     American spelling.
 
-[^6]: See [Arbitrary Command
-    Execution](https://docs.downflux.com/design/fsm.html) for more details -- we
-    batch incoming client API calls and merge them into the command queue at the
-    beginning of each tick, so that when we actually call `Command.Visit`, we
-    know the state does not have any ongoing conflicting mutations going on
-    simultaneously.
-
-[^9]: For a more in-depth discussion of the `attack` command
+[^7]: For a more in-depth discussion of the `attack` command
     implementation details, see
     [A Digression on Attack Variants](#a-digression-on-attack-variants)
