@@ -556,7 +556,7 @@ detecting if an event occurred between the last and current server tick.
 Moreover, the event-carried state transfer pattern seems to emphasize
 **minimizing data access to the underlying state**. The event pattern achieves
 this through some level of caching, packed into the event data in order to
-reduce resource contention. Our implementatino instead minimizes the API surface
+reduce resource contention. Our implementation instead minimizes the API surface
 area that is exposed through the command metadata.
 
 It is true that we could massage our current approach into an event-driven
@@ -636,11 +636,11 @@ Which cancels itself if the target exits range via a read-only operation.
 
 ### Partial Tick Execution
 
-Because the metadata is stored in a separate queue, we can pause visitor
+Because the metadata is stored in a separate queue, we can pause command
 execution at any given time during a tick -- this means we can smooth out large
 server loads over several ticks, allowing us to enforce a consistent server tick
 rate (at the expense of some additional end-to-end latency). This feature is not
-currently implemented in our game yet, pending load testing.
+currently implemented, but may be of use later.
 
 ## Notes
 
