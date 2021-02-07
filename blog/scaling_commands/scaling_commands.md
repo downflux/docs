@@ -615,7 +615,7 @@ func (c *ForgetfulAttackCommand) Visit(m ForgetfulAttackMetadata) {
 }
 ```
 
-<a name="figure-9"></a>Figure 9: Alternative `attack` command implementation.
+<a name="figure-12"></a>Figure 12: Alternative `attack` command implementation.
 Which cancels itself if the target exits range via a read-only operation.
 
 ### Partial Tick Execution
