@@ -658,13 +658,6 @@ currently implemented in our game yet, pending load testing.
     British, and so have reverted to the inferior but semantically consistent
     American spelling.
 
-[^6]: See [Arbitrary Command
-    Execution](https://docs.downflux.com/design/fsm.html) for more details -- we
-    batch incoming client API calls and merge them into the command queue at the
-    beginning of each tick, so that when we actually call `Command.Visit`, we
-    know the state does not have any ongoing conflicting mutations going on
-    simultaneously.
-
 [^7]: For a more in-depth discussion of the `attack` command
     implementation details, see
     [A Digression on Attack Variants](#a-digression-on-attack-variants)
