@@ -3,24 +3,38 @@ Scaling State Mutations via FSM Visitors
 
 _DownFlux is a real-time strategy game in active development at
 [github.com/downflux](https://github.com/downflux). I have several years of
-professional software development experience, but no experience with game
-development specifically. This document doesn't espouse a general solution
-applicable to all problems, but just demonstrates potentially an alternative to
-command patterns for a narrow set of circumstances. For a more technical
-overview of this approach, take a look at the [design
-doc](https://docs.downflux.com/design/fsm.html) instead._
+professional software development experience, none of which relates to game
+development. This document does not advocate a general form solution for all
+state mutation problems, but rather demonstrates a different approach at the
+command pattern. For a more technical and detailed overview of this approach,
+take a look at the [design
+doc](https://blog.downflux.com/2021/01/13/arbitrary-command-execution/)._
 
-_I also liberally use the third person plural here because it sounds awkward to
-say I all the time. Apologies._
+_I mix first person plural in this document liberally because it sounds awkward
+to keep saying "I" all the time, not because I'm royalty._
 
-## Background
+## Abstract
 
-One of the many challenges I've come across working on
-[DownFlux](https://github.com/downflux/game) has been to design a flow framework
-which affords the development of a great many state change operations without
-tying everything down into a gigantic smelly mess as we add more and more
-commands. This article discusses an approach that we've found to work for us --
-maybe you'll find something worth using in your own efforts.
+A major problem we faced while working on DownFlux has been finding a scalable
+approach to state mutations. Scalability here represents the ability for us to
+remain agile when implementing new mutation flows -- this encompasses general
+good software development guidelines like testability, code "fragrance" (i.e.
+lack of smell), and framework flexibility.
+
+Our model of a mutation flow consists of a command scheduler object, housing a
+metadata object per distinct flow invocation. These metadata objects are a thin
+wrapper around a finite state machine (FSM), and exposes a minimal subset of
+the game state to a visitor object.
+
+Our metadata objects may only call read-only queries to the game state, and
+returns a calculated state to the visitor. The visitor may invoke write
+operations on both the metadata and the underlying state.
+
+See a snapshot of our
+[repo](https://github.com/downflux/game/tree/8fbaefebcb31d5f59796c6285595ccda544dc02f)
+for more details. Feel free to reach out on
+[Reddit](https://reddit.com/r/downflux) or
+[Twitter](https://twitter.com/downfluxgame) with questions or comments.
 
 ## Jargon
 
@@ -38,10 +52,9 @@ maybe you'll find something worth using in your own efforts.
 
 ## An ad hoc Approach
 
-Our first attempt at mutating the state was pretty simple, as we only
-implemented the `move` command; we decided on a basic command pattern, where on
-each tick, the server will run through all installed commands and call a simple
-API.
+The first attempt we made at implementing a state mutation "framework" skipped
+any consideration of scalability or maintainability for the sake of an MVP. Here
+is our single `move` command:
 
 ```golang
 func (s *Server) Run() {
@@ -60,10 +73,10 @@ type Command interface {
 }
 
 func (c *MoveCommand) Execute(args interface{}) error {
-  a = args.(MoveCommandArgs)
+  a = args.(MoveCommandArg)
 
   // p is a list of Position objects (i.e. (x, y) tuples).
-  p = c.Map.GetPath(a.Source.Location.Get(a.Tick), a.Destination)
+  p = c.map.GetPath(a.Source.Location.Get(a.Tick), a.Destination)
 
   // Source merges the positions with internal velocity in
   // the curve.
@@ -74,14 +87,14 @@ func (c *MoveCommand) Execute(args interface{}) error {
 
 <a name="figure-1"></a>Figure 1: Simple implementation of the `move` command.
 
-Simple!
+Yup. This moves things. How do we start overengineer this?
 
-Our first hiccup is the fact that `GetPath` can be expensive if we were to
-report the full path -- these computing cycles may be wasted if the user
-instructs the same source object to move to a different location before the
-source reaches the destination,[^1] as is often the case in RTS games.
-Therefore, we want to calculate and set a short trajectory, with delayed
-execution of the rest of the path (see [Figure 2](#figure-2)).
+Our second order approximation takes into consideration `GetPath` is expensive
+-- we're making a full A* search. But in an RTS game, it is very often the case
+that the player direct units to a different location before the unit reaches the
+target, wasting a lot of compute cycles.[^1] Therefore, we want to calculate and
+set a partial trajectory instead, with delayed execution of the rest of the
+path.[^8]
 
 ![Partial Move DAG](assets/scaling_commands_partial_move.png)
 
@@ -93,8 +106,8 @@ With the partial path logic, our command now looks something like this:[^2]
 
 ```golang
 func (s *Server) Run() {
-  for var c := range s.Commands {
-    c.Execute(curTick)
+  for var args := range s.q {
+    c.Execute(curTick, args)
   }
 }
 
@@ -110,74 +123,69 @@ func (c *MoveCommand) Schedule(
   }
 }
 
-func (c *MoveCommand) Execute(t Tick) error {
+func (c *MoveCommand) Execute(t Tick, args interface{}) {
   const pathLen int = 10;
+  var arg := args.(MoveCommandArg)
 
-  for MoveCommandArg arg := range c.q {
+  // Return a path of a specific length instead.
+  p = c.Map.GetPath(
+    arg.Source.Location.Get(t),
+    arg.Destination,
+    pathLen,
+  )
 
-    // Return a path of a specific length instead.
-    p = c.Map.GetPath(
-      arg.Source.Location.Get(t),
-      arg.Destination,
-      pathLen,
-    )
+  arg.Source.Location.Update(p)
 
-    arg.Source.Location.Update(p)
-
-    if p[len(p) - 1] != arg.Destination {
-      c.Schedule(
-        t + a.Source.CalculateTravelTime(p),
-        arg.Source,
-        arg.Destination)
-    } else {
-      c.Delete(arg)
-    }
-  return nil
+  // Schedule partial path execution if the last element of the path is not
+  // the "true" destination. c.Schedule() also needs to calculate if there are
+  // any existing commands that need to be overwritten.
+  if p[len(p) - 1] != arg.Destination {
+    c.Schedule(
+      t + a.Source.CalculateTravelTime(p),
+      arg.Source,
+      arg.Destination)
+  } else {
+    c.Delete(arg)
+  }
 }
 ```
 
 <a name="figure-3"></a>Figure 3: Toy `move` command implementation v2 -- here we
-enqueue a delayed move command into the main command queue. This queue may have
-client- or other server-initiated command scheduling, so when we update the
-queue, we need to ensure there is a single, canonical execution flow.
+enqueue a delayed move command into the main queue. This queue may have client-
+or other server-initiated command scheduling, so when we update the queue, we
+need to ensure there is a single, canonical execution flow; this logic is packed
+into the `Schedule()` function, meaning **a single command will need to know the
+implementation logic / hierarchy of all other commands**.
 
 Kind of a pain, but still doable.
 
 This model worked well enough for us to get a rudimentary frontend client
-running that can issue the move command to the server, and the game state update
-appropriately.
+running; however, a gut check seems to indicate major scalability issues with
+this approach.[^3] In particular,
 
-However, a gut check seems to indicate major scalability issues with this
-approach[^3]. In particular,
+1. A command may act on multiple entity types, and an entity may have multiple
+  mutation flows -- the implementations so far already demonstrates this
+  vulnerability IMO.
+1. Because the command queue contains commands from all command implementations
+  (i.e. `move`, `attack`, etc.) and the command may mutate the queue (e.g.
+  partial move enqueues), the command must know the details of all siblings
+  flows.
+1. The command must manually check the global state each time it is invoked, e.g.
+  if the source has reached the destination. It is unclear how each command will
+  implement this state read, which will impede maintainability.
+1. `Command.Execute()` read and writes to the global state; from our simple move
+  example, this already seems like a testability nightmare and needs to be
+  addressed.
 
-* If there are state changes to the object which impact the command, e.g. if the
-  source is within attack range, it is up to the command to manually check.
+A common theme to these issues is the broad scope and authority we have
+conferred upon the command object; how can we clamp down on this?
 
-* The `Execute` function needs to keep track of the state of _all_ dependent
-  scheduling queues (similar to `c.q`) however, if a command may mutate multiple
-  queues, e.g. an `attack` command potentially needing to edit the `chase`
-  queue, this seems incredibly hard to manage without an overall framework or
-  design guidance.
+## (An Accidental) Tour de Entities
 
-* Making the command iterate over its own schedule just seems wrong -- why is
-  the command responsible for when it's called? A better separation of
-  responsibility intuitively seems more elegant than what we have here.
-
-## Tour de Entities
-
-Looking back, it feels the driving force for the refactoring efforts we've made
-in search of a solution to the overarching problem is that the command execution
-cycle has too much scope and authority. We can view our subsequent changes as a
-way to clamp down on the freedom of the command to arbitrarily change the
-system.
-
-One such effort is highlighted by the last concern stated above -- Why does a
-command have to burden itself with scheduled iteration? The `move` command only
-changes a single object -- what if we mirrored our command API to this model?
-
-This line of questions lead us to use the _canonical_
-[visitor model](https://en.wikipedia.org/wiki/Visitor_pattern) example, i.e.
-where we implement `Accept` on tangible objects.
+The first concern seems like a classic double dispatcher problem between the
+command and the entities (e.g. tanks) that they mutate. This seems to suggest we
+should break out the command into a
+[visitor pattern](https://en.wikipedia.org/wiki/Visitor_pattern) implementation.
 
 ```golang
 func (s *Server) Run() {
@@ -188,26 +196,130 @@ func (s *Server) Run() {
   }
 }
 
-func (e *EntityImpl) Accept(v Visitor) error { return v.Visit(e) }
+func (e *EntityImpl) Accept(v Visitor) { v.Visit(e) }
 
-func (c *MoveCommand) Visit(e Entity) error {
+func (c *MoveCommand) Visit(e Entity) {
+    if !e.IsMoveable() { return }
+
     if c.q.Has(e) {
       // This is the same implementation as in [Figure 3](#figure-3).
-      c.Execute(c.Status.CurrentTick())
+      c.Execute(c.Status.CurrentTick(), ...)
     }
 }
 ```
 
 <a name="figure-4"></a>Figure 4: The architectural change counterpart to the
-changes made in [Figure 3](#figure-3). The key takeaway is that our "`Execute`"
-function (`Visit`) no longer takes in an `interface{}` input -- we are starting
-to discourage implementing commands with arbitrary ease, with the return of a
-slightly more sensible execution model.
+changes made in [Figure 3](#figure-3).
 
-...Okay so this doesn't seem to be very different from our ad hoc approach
-(yet). Bear with me as we move on.
+There are some flaws here.
+
+1. The `Acceptor` object is a single game entity -- this is not abstract enough.
+  Consider the `attack` command which mutates both the attacker and target --
+  how do we visit target in an `AttackCommand`? Do we need a
+  `DealDamageVisitor`? If so, suggests we will need a message broker between
+  attacking and taking damage, which seems unnecessarily overwrought.
+1. The command still has to deal with the schedule (`c.q`), which is a _global
+  mutatable state_. As mentioned in [Figure 2](#figure-2), the schedule may be
+  edited by both sides of the network divide, and having our command dealing
+  with that logic directly seems messy.
+
+Note that **this refactor was actually useless in terms of reducing tech debt**,
+but was very important in exposing the points of friction that we will need to
+address.
+
+## Two-Pass Scheduler
 
 ## Finite State Metadata
+
+Let's examine the first concern above, where we're dealing with pain points
+brought up by iterating over the entities themselves in a command. Because we're
+visiting the entity, that means any broader details about the execution
+(including e.g. partial move cached data) still need to be managed by the
+command object:
+
+```golang
+type MoveCommand struct {
+  // Reference to global state.
+  q []MoveCommandArg
+  ...
+}
+
+func (c *MoveCommand) Visit(e Entity) {
+  if c.q.Has(e, ...) { ... }  // See [Figure 4](#figure-4)
+  ...
+}
+```
+
+This seems inefficient -- why are we accepting a non-scheduled entity as valid
+input? In fact, our first approach was probably closer to the mark -- let's just
+pass the command metadata as input instead!
+
+```golang
+func (c *MoveCommand) Visit(m MoveCommandArg) { ... }
+```
+
+One key difference between this and our initial implementation is how we're
+approaching the metadata object here -- we're promoting the metadata into a
+"real" data struct, and as such, we need to consider the exported metadata API.
+What does a command need from the metadata?
+
+In the case of `move` (with partial implementation), we need to track when the
+next iteration of partial paths need to be calculated. Seems like a job for an
+FSM!
+
+```golang
+type CommandMetadata interface {
+  Status() FSMState
+}
+
+// MoveCommandArg will implement the CommandMetadata interface.
+type MoveCommandArg struct {
+  status        *Status  // Exports CurrentTick().
+  scheduledTick Tick
+  source        Moveable
+  destination   Position
+}
+```
+
+<a name="figure-5"></a>Figure 5: Expanded `MoveCommandArg` type from
+[Figure 1](#figure-1).
+
+Where the FSM DAG for `MoveCommandArg` is as follow:
+
+![Move DAG](assets/scaling_commands_move_dag.png)
+
+<a name="figure-6"></a>Figure 6: `move` state diagram.
+
+The most straightforward way to link this into `MoveCommand.Visit()` looks
+something like this:
+
+```golang
+func (c *MoveCommand) Visit(m *MoveCommandArg) {
+  if m.Status() == EXECUTING {
+    p = c.Map.GetPath(..., pathLen)
+
+    // Need to schedule next iteration.
+    if m.Destination() != p[len(p) - 1] {
+      m.SetTick(...)
+      m.SetStatusOrDie(PENDING)
+    }  
+  }
+  if m.Source().Location(curTick) == m.Destination() {
+    m.SetStatusOrDie(FINISHED)
+  }
+}
+```
+
+<a name="figure-7"></a>Figure 7: `move` implementation with partial paths and
+FSM metadata inputs.
+
+------
+
+consider the first concern above -- 
+Our first breakthrough came when we realized that we're iterating over the wrong
+object -
+
+### Read-Only FSMs
 
 IMO, a large part of the code smell at this point is due to our scheduling
 management -- it seems like an exceedingly poor choice to make the flow -- the
@@ -236,17 +348,6 @@ objects don't really describe the underlying state of the game (e.g. the
 position of objects); rather, they describe the state of the state _mutations_.
 We already encountered this of sorts in [Figure 3](#figure-3):
 
-```golang
-type MoveCommandArgs struct {
-  scheduledTick Tick
-  source        Moveable
-  destination   Position
-}
-```
-
-<a name="figure-5"></a>Figure 5: Expanded `MoveCommandArgs` type from
-[Figure 1](#figure-1).
-
 One key observation is that we know the `move` command has finished if
 
 ```golang
@@ -258,10 +359,6 @@ Can we model the other states of the `move` command with similar tests?
 (Yes.)
 
 Let's consider the state diagram of the `move` command first:[^4]
-
-![Move DAG](assets/scaling_commands_move_dag.png)
-
-<a name="figure-6"></a>Figure 6: `move` state diagram.
 
 * `FINISHED`: As stated above, we know a command is finished if the source has
   arrived at the destination at a specific tick.
@@ -288,7 +385,7 @@ func (s *Server) Run() {
   }
 }
 
-func (v *MoveCommand) Visit(m MoveCommandArgs) {
+func (v *MoveCommand) Visit(m MoveCommandArg) {
   s := m.Status()
   switch s {
   case EXECUTING:
@@ -328,7 +425,7 @@ problematic in our ad hoc solution:
 * Additionally, because we are instead mutating and iterating over the metadata,
   we have avoided entirely the semantic issue of forcing an entity into our input.
 
-As a nice side-effect, because the metadata object acts as a gamestate proxy
+As a nice side-effect, because the metadata object acts as a game state proxy
 object for the command itself, we no longer need to create a fully initialized
 game state when testing a specific command -- it is sufficient to populate the
 _proxy_ with a reasonable subset of the state. Empirically, this has greatly
@@ -511,6 +608,9 @@ currently implemented in our game yet, pending load testing.
     partial pathfinding allows us to spread out pathfinding to multiple workers
     after the initial coarse-grain search. This may be a nice optimization route
     to go down in the future.
+
+[^8]: Future implementations of pathfinding, e.g. via flow fields or
+    navmesh-based solutions, may eliminate the need for partial paths.
 
 [^2]: In reality, this step was implemented along with initial visitor pattern
     migration (explained later), but we're highlighting a rather important
