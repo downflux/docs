@@ -2,12 +2,12 @@
 Scaling State Mutations via FSM Visitors
 
 _DownFlux is a real-time strategy game in active development at
-[github.com/downflux](https://github.com/downflux). I have several years of
-professional software development experience, none of which relates to game
-development. This document does not advocate a general form solution for all
-state mutation problems, but rather demonstrates a different approach at the
-command pattern. For a more technical and detailed overview of this approach,
-take a look at the [design
+[github.com/downflux](https://github.com/downflux). The goal of this project is
+simply to learn and have fun. I have several years of professional software
+development experience, none of which is in the game industry. This document
+does not advocate a general form solution for all state mutation problems, but
+rather demonstrates a different view of the command pattern. For a more
+technical and detailed overview of this approach, take a look at the [design
 doc](https://blog.downflux.com/2021/01/13/arbitrary-command-execution/)._
 
 _I mix first person plural in this document liberally because it sounds awkward
@@ -15,16 +15,16 @@ to keep saying "I" all the time, not because I'm royalty._
 
 ## Abstract
 
-A major problem we faced while working on DownFlux has been finding a scalable
-approach to state mutations. Scalability here represents the ability for us to
-remain agile when implementing new mutation flows -- this encompasses general
-good software development guidelines like testability, code "fragrance" (i.e.
-lack of smell), and framework flexibility.
+A major problem we're facing while working on DownFlux has been finding a
+scalable approach to state mutations. Scalability here represents the ability
+for us to remain agile when implementing new mutation flows -- this encompasses
+general good software development guidelines like testability, code "fragrance"
+(i.e. lack of smell), and framework flexibility.
 
 Our model of a mutation flow consists of a command scheduler object, housing a
 metadata object per distinct flow invocation. These metadata objects are a thin
-wrapper around a finite state machine (FSM), and exposes a minimal subset of
-the game state to a visitor object.
+wrapper around a finite state machine (FSM), and exposes a minimal subset of the
+game state to a visitor object.
 
 Our metadata objects may only call read-only queries to the game state, and
 returns a calculated state to the visitor. The visitor may invoke write
@@ -504,7 +504,7 @@ func (c *AttackCommand) Visit(m AttackMetadata) {
 }
 ```
 
-<a name="figure-11"></a>Figure 11: Simplified `attack` command implementation.[^7]
+<a name="figure-11"></a>Figure 11: Simplified `attack` command implementation.[^9]
 
 Dependencies in our framework are modeled by a pointer in the metadata to
 another metadata object. This allows us to hide the specifics of the dependency
@@ -665,6 +665,6 @@ currently implemented in our game yet, pending load testing.
     know the state does not have any ongoing conflicting mutations going on
     simultaneously.
 
-[^7]: For a more in-depth discussion of the `attack` command
+[^9]: For a more in-depth discussion of the `attack` command
     implementation details, see
     [A Digression on Attack Variants](#a-digression-on-attack-variants)
