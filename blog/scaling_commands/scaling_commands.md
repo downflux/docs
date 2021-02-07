@@ -269,6 +269,12 @@ FSM!
 type CommandMetadata interface {
   Status() FSMState
   Transitions() map[FSMState]FSMState
+
+  // Used to determine which command needs to be canceled.
+  Precedence(o CommandMetadata) bool
+
+  // Triggered by Schedule or a Command.
+  Cancel()
 }
 
 // MoveCommandArg will implement the CommandMetadata interface.
@@ -507,14 +513,25 @@ func (c *AttackCommand) Visit(m AttackMetadata) {
 <a name="figure-11"></a>Figure 11: Simplified `attack` command implementation.[^7]
 
 Dependencies in our framework are modeled by a pointer in the metadata to
-another metadata object. This allows us to hide the specifics of the dependency
-flow from the parent command. This decoupling of state reads from state writes
-is crucial for our scalability requirements.
+another metadata object; the encompassing flow can then incorporate the
+dependent flow status when reporting its own status. We have yet to encounter a
+case where the command needs to query a dependent step's status direcly.
 
-We have found this approach to be quite flexible. Feel free to browse our
-[repo](https://github.com/downflux/game/tree/8fbaefebcb31d5f59796c6285595ccda544dc02f),
-snapshotted at the time of writing, to see how we actually implemented these
-flows.
+A command may need to enqueue a dependent flow. For example, consider an entity
+commanded to guard an area -- when an enemy enters the entity's line of sight,
+`guard` may decide to enqueue an `attack`. In this case, the `guard` command
+will have a reference to the `attack` schedule and call `q.Append()`.
+
+### Canceling Commands
+
+`q.Append()` and `q.Merge()` will invoke `CommandMetadata.Precedence()`, which
+tests for the relative priority of two metadata objects. The lower priority one
+will be canceled.
+
+`CommandMetadata.Cancel()` is command-dependent, but should also trigger the
+`Cancel()` function of dependencies. An upstream / parent command which need the
+child finish can then query the child flow status when reporting its own
+`Status()`.
 
 ## See Also
 
@@ -534,28 +551,27 @@ pattern (indeed, from what little research I've done on this, it seems like this
 talk is actually _the_ talk which introduced the concept to the wider public).
 
 There are some interesting parallels here between the event-driven approach
-described and ours here. Indeed, when the command executors branches on the
-metadata state, we're effectively detecting if an event occurred between the
-last and current server tick! Additionally, the event-carried state transfer
-pattern seems to revolve around **minimizing data access to the underlying
-state** -- the event pattern achieves this through some level of caching packed
-into the event data in order to reduce resource contention, whereas we are
-minimizing the API surface area that is exposed through the command metadata.
-Maybe this is an example of convergent software evolution.
+described and ours here. Indeed, the state query in the command executor is just
+detecting if an event occurred between the last and current server tick.
+Moreover, the event-carried state transfer pattern seems to emphasize
+**minimizing data access to the underlying state**. The event pattern achieves
+this through some level of caching, packed into the event data in order to
+reduce resource contention. Our implementatino instead minimizes the API surface
+area that is exposed through the command metadata.
 
 It is true that we could massage our current approach into an event-driven
 approach; however, this seems both overengineered and antithetical to how we
 view our code.
 
-1. Remember that we are treating the game system as deterministic when an object
-  moves, the partial move schedule is already preordained -- there is no
+1. Remember that we are treating the game system as deterministic. When an
+  object moves, the partial move schedule is already preordained -- there is no
   additional user input that is necessary in order to make the system behave
   correctly. Our framework accounts for this by doing a series of state reads.
   However, if we were to transform the state transitions into broadcasted
-  events, we're essentially advocating that the system is always in flux, and
-  we're "promoting" deterministic behavior into the category of "unexpected"
-  inputs. This seems like a less elegant approach, and at the same time will
-  require a large system overhaul for questionable value.
+  events, we're asserting instead the system is always in flux, and we're
+  "promoting" deterministic behavior into the category of "unexpected" inputs.
+  This seems like a less elegant approach, and at the same time will require a
+  large system overhaul for questionable value (for our use-case).
 1. A single server tick will execute a list of commands in a known order, e.g.
   we process all `move` commands, then all `attack` commands, etc. Event queues
   are very useful when we are decoupling execution _order_ from our server;
@@ -566,7 +582,7 @@ view our code.
 ### <a name="a-digression-on-attack-variants"></a>A Digression on Attack Variants
 
 While editing this document, a [friend](https://www.jonkimbel.com) pointed out
-that the toy implementation of the `attack` command does not fully specify some
+the toy implementation of the `attack` command does not fully specify some
 edge-case behavior --
 
 > I know you said this is simplified, but how do you handle situations where the
