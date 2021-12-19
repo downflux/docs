@@ -145,24 +145,23 @@ We will leave discussion of how to use these ORCA planes to the next part.
 
 ## Notes
 
-[^1]:
-
-     For two circular agents, this is a disc.
+[^1]: For two circular agents, this is a disc.
 
 [^2]: Velocity objects generally are constructed for non-relativistic agents,
-and the relative velocities are just the normal vector difference
-**v<sub>A</sub>** - **v<sub>B</sub>**.
+    and the relative velocities are just the normal vector difference
+    **v<sub>A</sub>** - **v<sub>B</sub>**.
 
 [^3]: This is a configurable value – for example, we may make an agent with more
-mass less liable to change its own velocity. This can be done either implicitly,
-by refusing to alter the actual velocity of the more massive agent, at the cost
-of potential collisions if the timestep is too large, or by feeding the
-VO-generation library with a local weighting function (e.g. giving the more
-massive agent a weighted velocity change value of ||**u**||/10, with the less
-massive agent moving the remainder 9||**u**||/10).
+    mass less liable to change its own velocity. This can be done either
+    implicitly, by refusing to alter the actual velocity of the more massive
+    agent, at the cost of potential collisions if the timestep is too large, or
+    by feeding the VO-generation library with a local weighting function (e.g.
+    giving the more massive agent a weighted velocity change value of
+    ||**u**||/10, with the less massive agent moving the remainder
+    9||**u**||/10).
 
 [^4]: _Why_ we define this geometric object is due to math™, but more details
-can be found in van den Berg et al.
+    can be found in van den Berg et al.
 
 [^5]: Technically a hyperspace in N-dimensional ambient space (e.g. a half-space
-if our velocity vectors have a z-component).
+    if our velocity vectors have a z-component).
