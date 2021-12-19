@@ -1,5 +1,8 @@
 # Local Collision Avoidance
 
+*See ORCA in action at
+[github.com/downflux/go-orca](http://github.com/downflux/go-orca).*
+
 Consider a rectangle. If we were to double the length and width of the box, we
 _quadruple_ the total area – the area of a 2D object increases much faster than
 its characteristic length. We sometimes refer to this phenomena, and others like
@@ -141,7 +144,7 @@ We will leave discussion of how to use these ORCA planes to the next part.
 * van den Berg et al. "Reciprocal _n_-Body Collision Avoidance." 2011.  Snape et
 * al. "Reciprocal Collision Avoidance and Navigation for Video Games." 2012.
 * Sunshine-Hill, Ben. "RVO and ORCA: How They Really Work." 2017.  Snape, James.
-* [snape/RVO2](https://github.com/snape/RVO2). 2021.
+* [snape/RVO2](https://github.com/snape/RVO2). 2021.[^6]
 
 ## Notes
 
@@ -165,3 +168,7 @@ We will leave discussion of how to use these ORCA planes to the next part.
 
 [^5]: Technically a hyperspace in N-dimensional ambient space (e.g. a half-space
     if our velocity vectors have a z-component).
+
+[^6]: A lot of the work in our ORCA implemenation is based off of the official
+    ORCA implementation under the Apache 2.0 license. We thank the original author
+    for their work.
