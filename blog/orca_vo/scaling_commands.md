@@ -76,13 +76,7 @@ velocity here, and leave the second step to a future post.
 
 Consider two agents that are currently moving towards each other.
 
-<p id="gdcalert1" ><span style="color: red; font-weight: bold">>>>>>  gd2md-html
-alert: inline image link here (to images/image1.png). Store image on your image
-server and adjust path/filename/extension if necessary. </span><br>(<a
-href="#">Back to top</a>)(<a href="#gdcalert2">Next alert</a>)<br><span
-style="color: red; font-weight: bold">>>>>> </span></p>
-
-![alt_text](images/image1.png "image_tooltip")
+![Agent Collision](assets/orca_vo_agent_collision.png)
 
 Figure 1: Two agents in position (p-)space heading towards one another.
 
@@ -104,13 +98,7 @@ Any _relative_ velocity between the two objects that fall within this cone
 indicates that the two objects will collide at some point in the future,
 assuming the velocities stay constant.
 
-<p id="gdcalert2" ><span style="color: red; font-weight: bold">>>>>>  gd2md-html
-alert: inline image link here (to images/image2.png). Store image on your image
-server and adjust path/filename/extension if necessary. </span><br>(<a
-href="#">Back to top</a>)(<a href="#gdcalert3">Next alert</a>)<br><span
-style="color: red; font-weight: bold">>>>>> </span></p>
-
-![alt_text](images/image2.png "image_tooltip")
+![Collision Cone](assets/orca_vo_collision_cone.png")
 
 Figure 2: Velocity object between the two agents. The left figure demonstrates
 the intuitive construction of a velocity cone between two objects – here, we
@@ -147,13 +135,7 @@ half-plane[^5] ORCA<sub>A|B</sub> for agent A, which is orthogonal to **u** and
 passes through the minimally-adjusted velocity **v<sub>A</sub>** + **u**/2 (see
 Figure 3).
 
-<p id="gdcalert3" ><span style="color: red; font-weight: bold">>>>>>  gd2md-html
-alert: inline image link here (to images/image3.png). Store image on your image
-server and adjust path/filename/extension if necessary. </span><br>(<a
-href="#">Back to top</a>)(<a href="#gdcalert4">Next alert</a>)<br><span
-style="color: red; font-weight: bold">>>>>> </span></p>
-
-![alt_text](images/image3.png "image_tooltip")
+![ORCA](assets/orca_vo_orca.png")
 
 Figure 3: Construction of the ORCA half-plane of agent A given agent B. Note
 that **u** points to the closest point on the VO object from the relative
