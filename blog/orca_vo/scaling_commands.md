@@ -39,8 +39,9 @@ In order to reduce the pathfinding computation time then, it appears we need to
 tackle the problem in two fronts –
 
 1. find a way to apply the results of a single A\* calculation to multiple
-units, and 2. reduce the number of A\* pathfinding calculations which need to
-occur due to potential collisions
+units, and
+2. reduce the number of A\* pathfinding calculations which need to occur due to
+potential collisions
 
 A common command pattern in real-time strategy games is for a player to issue a
 move command to an entire group of units. A natural inclination then, is to run
@@ -62,9 +63,10 @@ ORCA achieves collision avoidance in two steps –
 
 
 1. calculating all agent-agent interactions and coming up with a characteristic
-velocity which avoids collisions (essentially `f(a, b) -> v`), and 2. given all
-such velocities, calculate a velocity for each agent that accounts for all
-potential upcoming collisions (i.e., a fold operation `g({v<sub>a</sub>}) -> v`)
+velocity which avoids collisions (essentially `f(a, b) -> v`), and
+2. given all such velocities, calculate a velocity for each agent that accounts
+for all potential upcoming collisions (i.e., a fold operation
+`g({v<sub>a</sub>}) -> v`)
 
 When we apply these steps to all agents, we will get an agent `{a: v}` map,
 where there is a guarantee no collisions will occur if the agent sets their
@@ -89,10 +91,10 @@ construct a velocity obstacle (VO) object in velocity (v-)space (Figure 2). The
 VO object is defined by two fundamental properties –
 
 
-1. the shape of the central blockage[^1] of the VO object, and 2. the
-coordinates of the center-of-mass of this blockage is away from the origin of
-v-space, which can be calculated from the relative velocities of the two
-objects.
+1. the shape of the central blockage[^1] of the VO object, and
+2. the coordinates of the center-of-mass of this blockage is away from the
+origin of v-space, which can be calculated from the relative velocities of the
+two objects.
 
 The shape of the central blockage is defined to be the set of all relative[^2]
 velocities between two objects which will result in collision, and the VO "cone"
