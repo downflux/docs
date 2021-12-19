@@ -141,11 +141,14 @@ We will leave discussion of how to use these ORCA planes to the next part.
 
 ## Works Cited
 
-* van den Berg et al. "Reciprocal _n_-Body Collision Avoidance." 2011.  Snape et
-  al. "Reciprocal Collision Avoidance and Navigation for Video Games." 2012.
+* van den Berg et al. "Reciprocal _n_-Body Collision Avoidance." 2011.
 
-* Sunshine-Hill, Ben. "RVO and ORCA: How They Really Work." 2017.  Snape, James.
-  [snape/RVO2](https://github.com/snape/RVO2). 2021.[^6]
+* Snape et al. "Reciprocal Collision Avoidance and Navigation for Video Games."
+  2012.
+
+* Sunshine-Hill, Ben. "RVO and ORCA: How They Really Work." 2017.
+
+* Snape, James. [snape/RVO2](https://github.com/snape/RVO2). 2021.[^6]
 
 ## Notes
 
