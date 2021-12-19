@@ -28,6 +28,7 @@ tackle the problem in two fronts –
 
 1. find a way to apply the results of a single A\* calculation to multiple
 units, and
+
 2. reduce the number of A\* pathfinding calculations which need to occur due to
 potential collisions
 
@@ -52,6 +53,7 @@ ORCA achieves collision avoidance in two steps –
 
 1. calculating all agent-agent interactions and coming up with a characteristic
 velocity which avoids collisions (essentially `f(a, b) -> v`), and
+
 2. given all such velocities, calculate a velocity for each agent that accounts
 for all potential upcoming collisions (i.e., a fold operation
 `g({v<sub>a</sub>}) -> v`)
@@ -64,16 +66,17 @@ velocity here, and leave the second step to a future post.
 
 Consider two agents that are currently moving towards each other.
 
-![Agent Collision](assets/orca_vo_agent_collision.png)
+<a name="figure-1"></a>![Agent Collision](assets/orca_vo_agent_collision.png)
 
 Figure 1: Two agents in position (p-)space heading towards one another.
 
 In order to determine if these two objects will collide, we can systematically
-construct a velocity obstacle (VO) object in velocity (v-)space (Figure 2). The
-VO object is defined by two fundamental properties –
+construct a velocity obstacle (VO) object in velocity (v-)space ([Figure
+2](#figure-2)). The VO object is defined by two fundamental properties –
 
 
 1. the shape of the central blockage[^1] of the VO object, and
+
 2. the coordinates of the center-of-mass of this blockage is away from the
 origin of v-space, which can be calculated from the relative velocities of the
 two objects.
@@ -86,15 +89,15 @@ Any _relative_ velocity between the two objects that fall within this cone
 indicates that the two objects will collide at some point in the future,
 assuming the velocities stay constant.
 
-![Collision Cone](assets/orca_vo_collision_cone.png")
+<a name="figure-2"></a>![Collision Cone](assets/orca_vo_collision_cone.png)
 
 Figure 2: Velocity object between the two agents. The left figure demonstrates
 the intuitive construction of a velocity cone between two objects – here, we
 find the velocities of the bottom agent that will result in the two agents
 colliding. The right figure demonstrates a rough construction of the velocity
-obstacle object created by the agents in Figure 1. Note that the circle here
-defines the characteristic "width" of the cone, and whose radius is proportional
-to r<sub>A</sub> + r<sub>B</sub>.
+obstacle object created by the agents in [Figure 1](#figure-1). Note that the
+circle here defines the characteristic "width" of the cone, and whose radius is
+proportional to r<sub>A</sub> + r<sub>B</sub>.
 
 We note that the distance from the v-space origin to the collision artifact
 (i.e. disc) is a function of time – that is, we will only achieve a collision if
@@ -107,10 +110,10 @@ _truncated_ VO object, where the base of the circle has radius r<sub>0</sub> /
 
 𝜏 = 1
 
-in Figure 2, the base of the truncated VO object is just the solid circle, and
-the VO object points away from the origin. To reiterate, relative velocities
-between the two agents which fall inside this truncated cone will cause a
-collision within the next timestep.
+in [Figure 2](#figure-2), the base of the truncated VO object is just the solid
+circle, and the VO object points away from the origin. To reiterate, relative
+velocities between the two agents which fall inside this truncated cone will
+cause a collision within the next timestep.
 
 Given a VO cone, it becomes fairly simple to generate a velocity which will
 avoid collision – this is the projected normal vector **u** onto the edge of VO.
@@ -121,9 +124,9 @@ _any_ relative velocity outside the VO object will ensure the two agents will
 not collide – because of reasons[^4], we narrow this search space to a
 half-plane[^5] ORCA<sub>A|B</sub> for agent A, which is orthogonal to **u** and
 passes through the minimally-adjusted velocity **v<sub>A</sub>** + **u**/2 (see
-Figure 3).
+[Figure 3](#figure-3)).
 
-![ORCA](assets/orca_vo_orca.png")
+<a name="figure-3"></a>![ORCA](assets/orca_vo_orca.png)
 
 Figure 3: Construction of the ORCA half-plane of agent A given agent B. Note
 that **u** points to the closest point on the VO object from the relative
