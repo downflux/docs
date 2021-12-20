@@ -55,11 +55,18 @@ ORCA achieves collision avoidance in two steps –
 
 
 1. calculating all agent-agent interactions and coming up with a characteristic
-velocity which avoids collisions (essentially `f(a, b) -> v`), and
+velocity which avoids collisions
+
+    ```
+    f(a, b) -> v
+    ```
 
 2. given all such velocities, calculate a velocity for each agent that accounts
-for all potential upcoming collisions (i.e., a fold operation
-`g({v<sub>a</sub>}) -> v`)
+for all potential upcoming collisions i.e., a fold operation
+
+    ```
+    g({v<sub>a</sub>}) -> v
+    ```
 
 When we apply these steps to all agents, we will get an agent `{a: v}` map,
 where there is a guarantee no collisions will occur if the agent sets their
